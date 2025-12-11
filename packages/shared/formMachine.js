@@ -16,36 +16,37 @@ function formJsonToJsonSchema(formJson, title = 'Form') {
     
     switch (field.type) {
       case 'string':
-      case 'text': 
+      case 'text':
+      case 'textarea':
         prop.type = 'string'
         if (field.minLength) prop.minLength = field.minLength
         if (field.maxLength) prop.maxLength = field.maxLength
-        if (field. pattern) prop.pattern = field.pattern
+        if (field.pattern) prop.pattern = field.pattern
         break
       case 'email':
-        prop. type = 'string'
-        prop. format = 'email'
+        prop.type = 'string'
+        prop.format = 'email'
         break
       case 'number':
       case 'integer': 
         prop.type = field.type
         if (field.minimum !== undefined) prop.minimum = field.minimum
-        if (field. maximum !== undefined) prop.maximum = field. maximum
+        if (field.maximum !== undefined) prop.maximum = field.maximum
         break
       case 'select':
-        prop. type = 'string'
-        prop. enum = field.options. map(o => o.value)
+        prop.type = 'string'
+        prop.enum = field.options.map(o => o.value)
         prop.oneOf = field.options.map(o => ({ const: o.value, title: o.label }))
         break
       case 'boolean':
-        prop. type = 'boolean'
+        prop.type = 'boolean'
         break
       case 'date':
-        prop. type = 'string'
-        prop. format = 'date'
+        prop.type = 'string'
+        prop.format = 'date'
         break
       default:
-        prop. type = 'string'
+        prop.type = 'string'
     }
 
     if (field.default !== undefined) prop.default = field. default
@@ -71,8 +72,8 @@ function formJsonToUiSchema(formJson) {
     if (field.placeholder) {
       element.options = { placeholder: field.placeholder }
     }
-    if (field. type === 'textarea') {
-      element.options = { ... element.options, multi: true }
+    if (field.type === 'textarea') {
+      element.options = { ...element.options, multi: true }
     }
 
     return element

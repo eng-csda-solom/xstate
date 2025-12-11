@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { JsonForms } from '@jsonforms/react'
-import {
-  vanillaCells,
-  vanillaRenderers
-} from '@jsonforms/vanilla-renderers'
+import { vanillaCells, vanillaRenderers } from '@jsonforms/vanilla-renderers'
 import { useMachine } from '@xstate/react'
 import { createMachine, assign } from 'xstate'
 
-// Custom TailwindCSS renderers (we'll create these)
+// Custom TailwindCSS renderers
 import { tailwindRenderers, tailwindCells } from './renderers/tailwind'
 
 // ---------- Client-side Machine ----------
@@ -84,12 +81,12 @@ const createFormMachine = (actionId) =>
         })),
         setSubmitting:  assign({ isSubmitting: true }),
         clearSubmitting: assign({ isSubmitting: false }),
-        setResult: assign((ctx, ev) => ({ result: ev.data. data })),
+        setResult: assign((ctx, ev) => ({ result: ev.data.data })),
         setServerErrors: assign((ctx, ev) => ({
-          serverErrors: ev.data?. errors || { _form: 'Submission failed' }
+          serverErrors: ev.data?.errors || { _form: 'Submission failed' }
         })),
         setLoadError: assign((ctx, ev) => ({
-          serverErrors: { _form: ev. data?.message || 'Failed to load form' }
+          serverErrors: { _form: ev.data?.message || 'Failed to load form' }
         })),
         resetForm: assign({
           formData: {},
@@ -107,10 +104,10 @@ const createFormMachine = (actionId) =>
         submitForm: async (ctx) => {
           const res = await fetch(`http://localhost:3001/api/actions/${ctx.actionId}/submit`, {
             method: 'POST',
-            headers:  { 'Content-Type': 'application/json' },
-            body: JSON. stringify(ctx.formData)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ctx.formData)
           })
-          const data = await res. json()
+          const data = await res.json()
           if (!res.ok || !data.success) {
             throw data
           }
@@ -150,7 +147,7 @@ export default function App() {
             {actions.map((action) => (
               <button
                 key={action.id}
-                onClick={() => setSelectedAction(action. id)}
+                onClick={() => setSelectedAction(action.id)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   selectedAction === action.id
                     ? 'bg-indigo-600 text-white'
@@ -173,7 +170,7 @@ export default function App() {
 // ---------- Dynamic Form Component ----------
 function DynamicForm({ actionId }) {
   const [state, send] = useMachine(() => createFormMachine(actionId))
-  const { jsonSchema, uiSchema, formData, errors, serverErrors, isSubmitting, result } = state. context
+  const { jsonSchema, uiSchema, formData, errors, serverErrors, isSubmitting, result } = state.context
 
   const handleChange = ({ data, errors }) => {
     send({ type: 'CHANGE', data, errors })
@@ -250,8 +247,8 @@ function DynamicForm({ actionId }) {
             schema={jsonSchema}
             uischema={uiSchema}
             data={formData}
-            renderers={tailwindRenderers}
-            cells={tailwindCells}
+            renderers={[...tailwindRenderers, ...vanillaRenderers]}
+            cells={[...tailwindCells, ...vanillaCells]}
             onChange={handleChange}
           />
         </div>
@@ -264,7 +261,7 @@ function DynamicForm({ actionId }) {
             className={`w-full px-4 py-3 rounded-lg font-medium text-white transition-colors ${
               isSubmitting
                 ? 'bg-indigo-400 cursor-not-allowed'
-                :  'bg-indigo-600 hover:bg-indigo-700'
+                : 'bg-indigo-600 hover:bg-indigo-700'
             }`}
           >
             {isSubmitting ? (
@@ -285,7 +282,7 @@ function DynamicForm({ actionId }) {
       {/* Debug panel (optional) */}
       <details className="border-t">
         <summary className="px-6 py-3 text-sm text-gray-500 cursor-pointer hover:bg-gray-50">
-          Debug:  Machine State
+          Debug: Machine State
         </summary>
         <pre className="px-6 py-4 bg-gray-900 text-green-400 text-xs overflow-auto">
           {JSON.stringify({ state: state.value, context: state.context }, null, 2)}
